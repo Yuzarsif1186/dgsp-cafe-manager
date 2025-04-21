@@ -392,14 +392,240 @@
         </section>
 
         <!-- Feature Sections (Placeholders) -->
-        <section id="bookkeeping" class="my-5 py-4" style="display:none;">
-            <h2 class="mb-4">Bookkeeping</h2>
-            <div class="card">
-                <div class="card-body">
-                    <p>Financial tracking system will appear here</p>
+        <!-- ======= Bookkeeping Section ======= -->
+<section id="bookkeeping" class="my-5 py-4" style="display:none;">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="card shadow">
+          
+          <!-- Header -->
+          <div class="card-header bg-primary text-white">
+            <h3 class="mb-0"><i class="fas fa-calculator me-2"></i>Bookkeeping System</h3>
+          </div>
+          
+          <div class="card-body">
+            
+            <!-- Transaction Form -->
+            <form id="transactionForm">
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label class="form-label">Work Done/Service</label>
+                  <input type="text" class="form-control" id="workDone" required>
                 </div>
+                <div class="col-md-6">
+                  <label class="form-label">Amount (₦)</label>
+                  <input type="number" class="form-control" id="transactionAmount" step="0.01" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Transaction Type</label>
+                  <select class="form-select" id="transactionType" required>
+                    <option value="" disabled selected>Select type</option>
+                    <option value="revenue">Revenue (+)</option>
+                    <option value="expense">Expense (-)</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Date</label>
+                  <input type="date" class="form-control" id="transactionDate" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Description</label>
+                  <textarea class="form-control" id="transactionDesc" rows="2"></textarea>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-save me-2"></i>Record Transaction
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <!-- Financial Summary -->
+            <div class="row mb-4">
+              <div class="col-md-4 mb-3">
+                <div class="card bg-success bg-opacity-10 border-success">
+                  <div class="card-body text-center">
+                    <h6 class="card-title text-success">Total Revenue</h6>
+                    <h3 id="totalRevenue">₦0.00</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="card bg-danger bg-opacity-10 border-danger">
+                  <div class="card-body text-center">
+                    <h6 class="card-title text-danger">Total Expenses</h6>
+                    <h3 id="totalExpenses">₦0.00</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="card bg-primary bg-opacity-10 border-primary">
+                  <div class="card-body text-center">
+                    <h6 class="card-title text-primary">Net Balance</h6>
+                    <h3 id="netBalance">₦0.00</h3>
+                  </div>
+                </div>
+              </div>
             </div>
-        </section>
+
+            <!-- Savings Allocation -->
+            <div class="card mb-4 border-info">
+              <div class="card-header bg-info bg-opacity-10 text-info">
+                <h5 class="mb-0"><i class="fas fa-piggy-bank me-2"></i>Savings Allocation</h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <div class="p-3 bg-light rounded">
+                      <small class="text-muted">Business Account (70%)</small>
+                      <h4 id="businessAccount">₦0.00</h4>
+                    </div>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <div class="p-3 bg-light rounded">
+                      <small class="text-muted">Personal Savings (20%)</small>
+                      <h4 id="personalSavings">₦0.00</h4>
+                    </div>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <div class="p-3 bg-light rounded">
+                      <small class="text-muted">Zakat Reserve (10%)</small>
+                      <h4 id="zakatReserve">₦0.00</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div class="card border-secondary">
+              <div class="card-header bg-secondary bg-opacity-10">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Transactions</h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                      </tr>
+                    </thead>
+                    <tbody id="transactionHistory">
+                      <tr>
+                        <td colspan="4" class="text-center text-muted">No transactions yet</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ─── Helpers ────────────────────────────────────────────────────────────────
+function getTransactions() {
+  return JSON.parse(localStorage.getItem('dgspTransactions') || '[]');
+}
+function setTransactions(arr) {
+  localStorage.setItem('dgspTransactions', JSON.stringify(arr));
+}
+
+// ─── Initialization ────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Default date to today
+  const dateInp = document.getElementById('transactionDate');
+  if (dateInp) dateInp.valueAsDate = new Date();
+
+  // Wire up form
+  document.getElementById('transactionForm')
+    .addEventListener('submit', e => {
+      e.preventDefault();
+      saveTransaction(e);
+    });
+
+  // Render existing
+  getTransactions().forEach(addTransactionToTable);
+  updateFinancialSummary();
+});
+
+// ─── Save a new transaction ────────────────────────────────────────────────
+function saveTransaction(e) {
+  const t = {
+    work:        document.getElementById('workDone').value,
+    amount:      parseFloat(document.getElementById('transactionAmount').value),
+    type:        document.getElementById('transactionType').value,
+    date:        document.getElementById('transactionDate').value,
+    description: document.getElementById('transactionDesc').value || 'No description',
+    timestamp:   new Date().toISOString()
+  };
+
+  const arr = getTransactions();
+  arr.push(t);
+  setTransactions(arr);
+
+  addTransactionToTable(t);
+  updateFinancialSummary();
+
+  // Reset form & date
+  e.target.reset();
+  document.getElementById('transactionDate').valueAsDate = new Date();
+}
+
+// ─── Update the summary cards ───────────────────────────────────────────────
+function updateFinancialSummary() {
+  const tx = getTransactions();
+  let rev = 0, exp = 0;
+
+  tx.forEach(o => {
+    if (o.type === 'revenue') rev += o.amount;
+    else exp += o.amount;
+  });
+
+  const net = rev - exp;
+  document.getElementById('totalRevenue').textContent  = `₦${rev.toFixed(2)}`;
+  document.getElementById('totalExpenses').textContent = `₦${exp.toFixed(2)}`;
+  document.getElementById('netBalance').textContent    = `₦${net.toFixed(2)}`;
+
+  // Allocate 20% of net as savings
+  const saveAmt = net * 0.2;
+  document.getElementById('businessAccount').textContent  = `₦${(saveAmt * 0.7).toFixed(2)}`;
+  document.getElementById('personalSavings').textContent = `₦${(saveAmt * 0.2).toFixed(2)}`;
+  document.getElementById('zakatReserve').textContent    = `₦${(saveAmt * 0.1).toFixed(2)}`;
+}
+
+// ─── Add a row to the transaction table ───────────────────────────────────
+function addTransactionToTable(o) {
+  const tbody = document.getElementById('transactionHistory');
+  // Clear "no transactions" if present
+  if (tbody.querySelector('.text-muted')) tbody.innerHTML = '';
+
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td>${new Date(o.date).toLocaleDateString()}</td>
+    <td>${o.work}</td>
+    <td class="${o.type==='revenue'?'text-success':'text-danger'}">
+      ₦${o.amount.toFixed(2)}
+    </td>
+    <td>
+      <span class="badge ${o.type==='revenue'?'bg-success':'bg-danger'}">
+        ${o.type==='revenue'?'Revenue':'Expense'}
+      </span>
+    </td>
+  `;
+  tbody.prepend(row);
+}
+</script>
+
 
         <section id="sales" class="my-5 py-4" style="display:none;">
             <h2 class="mb-4">Sales Calculator</h2>
