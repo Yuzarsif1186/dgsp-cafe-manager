@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <!-- Custom CSS -->
     <style>
         :root {
@@ -289,6 +291,42 @@
         .pulse {
             animation: pulse 2s infinite;
         }
+
+        .bg-gradient-danger {
+      background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
+    }
+    .card {
+      transition: all 0.3s ease;
+      border-radius: 0.75rem;
+    }
+    .card:hover {
+      box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    }
+    .form-control, .input-group-text {
+      border-radius: 0.5rem;
+    }
+    #serviceTotal {
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #bb2d3b;
+      border-color: #bb2d3b;
+    }
+    .bg-soft-danger {
+      background-color: rgba(220, 53, 69, 0.1);
+    }
+    .badge-soft-danger {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+    .border-dashed {
+      border-bottom: 2px dashed #dee2e6;
+    }
     </style>
 </head>
 <body>
@@ -627,32 +665,688 @@ function addTransactionToTable(o) {
 </script>
 
 
-        <section id="sales" class="my-5 py-4" style="display:none;">
-            <h2 class="mb-4">Sales Calculator</h2>
-            <div class="card">
-                <div class="card-body">
-                    <p>Office accessories pricing calculator will appear here</p>
+        <!-- ======= Sales Calculator Section ======= -->
+<section id="sales" class="my-5 py-4">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="card shadow">  
+          
+          <!-- Header with Close Button -->
+          <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="fas fa-cash-register me-2"></i>Sales Calculator</h3>
+            <!-- Bootstrap close icon (white) -->
+            <button type="button"
+                    class="btn-close btn-close-white"
+                    aria-label="Close"
+                    onclick="document.getElementById('sales').style.display='none'">
+            </button>
+          </div>
+          
+          <div class="card-body">
+            
+            <!-- Sales Form -->
+            <form id="salesForm">
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label class="form-label">Product Name</label>
+                  <input type="text" class="form-control" id="productName" required>
                 </div>
-            </div>
-        </section>
+                <div class="col-md-6">
+                  <label class="form-label">Cost per Unit (₦)</label>
+                  <input type="number" class="form-control" id="costPrice" step="0.01" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Quantity Purchased</label>
+                  <input type="number" class="form-control" id="quantity" step="1" value="1" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Profit Margin (%)</label>
+                  <input type="number" class="form-control" id="profitMargin" value="30" required>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-secondary w-100">
+                    <i class="fas fa-calculator me-2"></i>Calculate & Save
+                  </button>
+                </div>
+              </div>
+            </form>
 
-        <section id="services" class="my-5 py-4" style="display:none;">
-            <h2 class="mb-4">Services Pricing</h2>
-            <div class="card">
-                <div class="card-body">
-                    <p>Service cost calculator will appear here</p>
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+              <div class="col-md-4 mb-3">
+                <div class="card bg-light">
+                  <div class="card-body text-center">
+                    <h6 class="card-title">Total Cost</h6>
+                    <h4 id="sumCost">₦0.00</h4>
+                  </div>
                 </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="card bg-light">
+                  <div class="card-body text-center">
+                    <h6 class="card-title">Total Revenue</h6>
+                    <h4 id="sumRevenue">₦0.00</h4>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <div class="card bg-light">
+                  <div class="card-body text-center">
+                    <h6 class="card-title">Total Profit</h6>
+                    <h4 id="sumProfit">₦0.00</h4>
+                  </div>
+                </div>
+              </div>
             </div>
-        </section>
 
-        <section id="admin" class="my-5 py-4" style="display:none;">
-            <h2 class="mb-4">Admin Dashboard</h2>
-            <div class="card">
-                <div class="card-body">
-                    <p>Admin tools will appear here</p>
+            <!-- Calculation History -->
+            <div class="card border-secondary">
+              <div class="card-header bg-secondary bg-opacity-10">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>History</h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Product</th>
+                        <th>Cost</th>
+                        <th>Qty</th>
+                        <th>Margin</th>
+                        <th>Sell Price</th>
+                        <th>Revenue</th>
+                        <th>Profit</th>
+                      </tr>
+                    </thead>
+                    <tbody id="salesHistory">
+                      <tr>
+                        <td colspan="8" class="text-center text-muted">No calculations yet</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
+              </div>
             </div>
-        </section>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section><!-- ======= Professional Service Pricing Calculator ======= -->
+  <section id="services" class="my-5 py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 mx-auto">
+          <div class="card shadow-lg border-0 overflow-hidden">
+            <!-- Header -->
+            <div class="card-header bg-gradient-danger text-white py-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-calculator fa-lg me-3"></i>
+                  <div>
+                    <h3 class="mb-0 fw-bold">Professional Service Pricing</h3>
+                    <small class="opacity-75">70% profit margin | Accurate cost calculation</small>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-light rounded-circle p-2" aria-label="Close" onclick="document.getElementById('services').style.display='none'">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="card-body px-4 py-4">
+              <!-- Material Costs Section -->
+              <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold text-muted">A4 Paper Pack Price (₦)</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-file-alt text-danger"></i></span>
+                    <input type="number" class="form-control" id="paperPrice" placeholder="e.g. 4500" step="0.01">
+                  </div>
+                  <small class="text-muted">500 sheets/pack</small>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold text-muted">Laminating Pack Price (₦)</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-box-open text-danger"></i></span>
+                    <input type="number" class="form-control" id="laminatePackPrice" placeholder="e.g. 12000" step="0.01">
+                  </div>
+                  <small class="text-muted">100 pouches/pack</small>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold text-muted">Ink/Toner Cost per Page (₦)</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fas fa-tint text-danger"></i></span>
+                    <input type="number" class="form-control" id="inkCost" placeholder="e.g. 5" step="0.01" value="5">
+                  </div>
+                  <small class="text-muted">Average ink consumption</small>
+                </div>
+              </div>
+
+              <!-- Calculated Unit Prices -->
+              <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                  <div class="p-3 bg-light rounded-3 h-100">
+                    <h6 class="fw-bold text-danger mb-2"><i class="fas fa-print me-2"></i>Printing Cost</h6>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span>Base Cost:</span>
+                      <strong>₦<span id="printingBaseCost">0.00</span></strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span>+ 70% Margin:</span>
+                      <strong>₦<span id="printingProfit">0.00</span></strong>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="fw-bold">Final Price:</span>
+                      <strong class="text-danger">₦<span id="printPrice">0.00</span></strong>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="p-3 bg-light rounded-3 h-100">
+                    <h6 class="fw-bold text-danger mb-2"><i class="fas fa-copy me-2"></i>Photocopy Cost</h6>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span>Base Cost:</span>
+                      <strong>₦<span id="photocopyBaseCost">0.00</span></strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span>+ 70% Margin:</span>
+                      <strong>₦<span id="photocopyProfit">0.00</span></strong>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="fw-bold">Final Price:</span>
+                      <strong class="text-danger">₦<span id="copyPrice">0.00</span></strong>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="p-3 bg-light rounded-3 h-100">
+                    <h6 class="fw-bold text-danger mb-2"><i class="fas fa-id-card me-2"></i>Laminating Cost</h6>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span>Base Cost:</span>
+                      <strong>₦<span id="laminateBaseCost">0.00</span></strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span>+ 70% Margin:</span>
+                      <strong>₦<span id="laminateProfit">0.00</span></strong>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="fw-bold">Final Price:</span>
+                      <strong class="text-danger">₦<span id="laminatePrice">0.00</span></strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Service Quantity Inputs -->
+              <form id="serviceForm" class="mb-4">
+                <div class="row g-4">
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Printing Quantity</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="fas fa-print text-danger"></i></span>
+                      <input type="number" class="form-control" id="printQty" value="0" min="0">
+                    </div>
+                    <small class="text-muted">₦<span id="printPriceDisplay">0.00</span> per copy</small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Photocopy Quantity</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="fas fa-copy text-danger"></i></span>
+                      <input type="number" class="form-control" id="copyQty" value="0" min="0">
+                    </div>
+                    <small class="text-muted">₦<span id="copyPriceDisplay">0.00</span> per copy</small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Laminating Quantity</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="fas fa-id-card text-danger"></i></span>
+                      <input type="number" class="form-control" id="laminateQty" value="0" min="0">
+                    </div>
+                    <small class="text-muted">₦<span id="laminatePriceDisplay">0.00</span> per pouch</small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Typesetting Quantity</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light"><i class="fas fa-keyboard text-danger"></i></span>
+                      <input type="number" class="form-control" id="typeQty" value="0" min="0">
+                    </div>
+                    <small class="text-muted">Flat rate ₦150 per page</small>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-danger btn-lg w-100 py-3 shadow-sm mt-4 text-white">
+                  <i class="fas fa-calculator me-2"></i>Calculate Total Price
+                </button>
+              </form>
+
+              <!-- Final Result -->
+              <div class="card border-danger mt-4">
+                <div class="card-body text-center py-3">
+                  <h5 class="text-muted mb-2">Total Service Charge</h5>
+                  <h2 class="text-danger fw-bold mb-2">₦<span id="serviceTotal">0.00</span></h2>
+                  <div class="d-flex justify-content-center">
+                    <span class="badge badge-soft-danger me-2">
+                      <i class="fas fa-chart-line me-1"></i> 70% Margin
+                    </span>
+                    <span class="badge badge-soft-danger">
+                      <i class="fas fa-calculator me-1"></i> Accurate Pricing
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cost Breakdown -->
+              <div class="mt-4 p-3 bg-light rounded-3">
+                <h6 class="fw-bold text-danger mb-3"><i class="fas fa-receipt me-2"></i>Detailed Cost Breakdown</h6>
+                <ul class="list-unstyled">
+                  <li class="mb-2 d-flex justify-content-between">
+                    <span>Printing (<span id="printQtyDisplay">0</span> × ₦<span id="printPriceBreakdown">0.00</span>):</span>
+                    <span class="fw-bold">₦<span id="printTotal">0.00</span></span>
+                  </li>
+                  <li class="mb-2 d-flex justify-content-between">
+                    <span>Photocopy (<span id="copyQtyDisplay">0</span> × ₦<span id="copyPriceBreakdown">0.00</span>):</span>
+                    <span class="fw-bold">₦<span id="copyTotal">0.00</span></span>
+                  </li>
+                  <li class="mb-2 d-flex justify-content-between">
+                    <span>Laminating (<span id="laminateQtyDisplay">0</span> × ₦<span id="laminatePriceBreakdown">0.00</span>):</span>
+                    <span class="fw-bold">₦<span id="laminateTotal">0.00</span></span>
+                  </li>
+                  <li class="mb-2 d-flex justify-content-between">
+                    <span>Typesetting (<span id="typeQtyDisplay">0</span> × ₦150.00):</span>
+                    <span class="fw-bold">₦<span id="typeTotal">0.00</span></span>
+                  </li>
+                  <li class="pt-2 mt-2 border-top d-flex justify-content-between">
+                    <span class="fw-bold">Total Before Margin:</span>
+                    <span class="fw-bold">₦<span id="subtotal">0.00</span></span>
+                  </li>
+                  <li class="d-flex justify-content-between">
+                    <span class="fw-bold">70% Profit Margin:</span>
+                    <span class="fw-bold text-danger">+₦<span id="profitAmount">0.00</span></span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- PDF Quote Generator -->
+              <div class="mt-5 text-center">
+                <button id="generateQuote" class="btn btn-success btn-lg py-3 px-4">
+                  <i class="fas fa-file-pdf me-2"></i>Download Customer Quote
+                </button>
+                <small class="d-block mt-2 text-muted">Professional PDF for clients</small>
+              </div>
+
+              <!-- Invoice Tracker -->
+              <div class="mt-5 card border-0 shadow">
+                <div class="card-header bg-dark text-white">
+                  <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Job History</h5>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table" id="invoiceTable">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Services</th>
+                          <th>Total (₦)</th>
+                          <th>Status</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                  <div class="d-flex justify-content-between mt-3">
+                    <button id="saveInvoice" class="btn btn-danger">
+                      <i class="fas fa-save me-2"></i>Save Current Job
+                    </button>
+                    <button id="exportCSV" class="btn btn-outline-secondary">
+                      <i class="fas fa-download me-2"></i>Export to CSV
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Inventory Tracker (Simplified) -->
+              <div class="mt-4 p-3 bg-light rounded-3">
+                <h6 class="fw-bold text-danger mb-3"><i class="fas fa-box-open me-2"></i>Materials Used in This Job</h6>
+                <ul class="list-unstyled">
+                  <li class="mb-2 d-flex justify-content-between border-dashed pb-2">
+                    <span>A4 Sheets:</span>
+                    <span class="fw-bold"><span id="jobSheets">0</span> sheets</span>
+                  </li>
+                  <li class="mb-2 d-flex justify-content-between border-dashed pb-2">
+                    <span>Laminating Pouches:</span>
+                    <span class="fw-bold"><span id="jobPouches">0</span> pouches</span>
+                  </li>
+                  <li class="d-flex justify-content-between">
+                    <span>Ink Consumption:</span>
+                    <span class="fw-bold"><span id="jobInk">0</span>%</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Required Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+  <script>
+    // Professional Pricing Configuration
+    const PROFIT_MARGIN = 0.7; // 70% profit margin
+    const TYPE_SETTING_PRICE = 150; // Flat rate for typesetting
+    const SHEETS_PER_PACK = 500; // A4 sheets per pack
+    const POUCHES_PER_PACK = 100; // Laminating pouches per pack
+
+    // DOM Elements
+    const elements = {
+      paperPrice: document.getElementById('paperPrice'),
+      laminatePackPrice: document.getElementById('laminatePackPrice'),
+      inkCost: document.getElementById('inkCost'),
+      printingBaseCost: document.getElementById('printingBaseCost'),
+      photocopyBaseCost: document.getElementById('photocopyBaseCost'),
+      laminateBaseCost: document.getElementById('laminateBaseCost'),
+      printingProfit: document.getElementById('printingProfit'),
+      photocopyProfit: document.getElementById('photocopyProfit'),
+      laminateProfit: document.getElementById('laminateProfit'),
+      printPrice: document.getElementById('printPrice'),
+      copyPrice: document.getElementById('copyPrice'),
+      laminatePrice: document.getElementById('laminatePrice'),
+      printPriceDisplay: document.getElementById('printPriceDisplay'),
+      copyPriceDisplay: document.getElementById('copyPriceDisplay'),
+      laminatePriceDisplay: document.getElementById('laminatePriceDisplay'),
+      serviceTotal: document.getElementById('serviceTotal'),
+      printQtyDisplay: document.getElementById('printQtyDisplay'),
+      copyQtyDisplay: document.getElementById('copyQtyDisplay'),
+      laminateQtyDisplay: document.getElementById('laminateQtyDisplay'),
+      typeQtyDisplay: document.getElementById('typeQtyDisplay'),
+      printPriceBreakdown: document.getElementById('printPriceBreakdown'),
+      copyPriceBreakdown: document.getElementById('copyPriceBreakdown'),
+      laminatePriceBreakdown: document.getElementById('laminatePriceBreakdown'),
+      printTotal: document.getElementById('printTotal'),
+      copyTotal: document.getElementById('copyTotal'),
+      laminateTotal: document.getElementById('laminateTotal'),
+      typeTotal: document.getElementById('typeTotal'),
+      subtotal: document.getElementById('subtotal'),
+      profitAmount: document.getElementById('profitAmount'),
+      jobSheets: document.getElementById('jobSheets'),
+      jobPouches: document.getElementById('jobPouches'),
+      jobInk: document.getElementById('jobInk')
+    };
+
+    // Calculate Base Costs
+    function calculateBaseCosts() {
+      const paperCostPerSheet = parseFloat(elements.paperPrice.value || 0) / SHEETS_PER_PACK;
+      const inkCost = parseFloat(elements.inkCost.value || 0);
+      const laminateCostPerPouch = parseFloat(elements.laminatePackPrice.value || 0) / POUCHES_PER_PACK;
+
+      // Printing: Paper + Ink + 70% margin
+      const printingBase = paperCostPerSheet + inkCost;
+      const printingFinal = printingBase * (1 + PROFIT_MARGIN);
+
+      // Photocopy: Paper only + 70% margin (typically lower operational cost)
+      const photocopyBase = paperCostPerSheet * 1.1; // 10% higher paper cost for copier wear
+      const photocopyFinal = photocopyBase * (1 + PROFIT_MARGIN);
+
+      // Laminating: Pouch cost + 70% margin
+      const laminateFinal = laminateCostPerPouch * (1 + PROFIT_MARGIN);
+
+      // Update displays
+      elements.printingBaseCost.textContent = printingBase.toFixed(2);
+      elements.photocopyBaseCost.textContent = photocopyBase.toFixed(2);
+      elements.laminateBaseCost.textContent = laminateCostPerPouch.toFixed(2);
+      
+      elements.printingProfit.textContent = (printingBase * PROFIT_MARGIN).toFixed(2);
+      elements.photocopyProfit.textContent = (photocopyBase * PROFIT_MARGIN).toFixed(2);
+      elements.laminateProfit.textContent = (laminateCostPerPouch * PROFIT_MARGIN).toFixed(2);
+      
+      elements.printPrice.textContent = printingFinal.toFixed(2);
+      elements.copyPrice.textContent = photocopyFinal.toFixed(2);
+      elements.laminatePrice.textContent = laminateFinal.toFixed(2);
+      
+      elements.printPriceDisplay.textContent = printingFinal.toFixed(2);
+      elements.copyPriceDisplay.textContent = photocopyFinal.toFixed(2);
+      elements.laminatePriceDisplay.textContent = laminateFinal.toFixed(2);
+
+      return {
+        printing: printingFinal,
+        photocopy: photocopyFinal,
+        laminating: laminateFinal
+      };
+    }
+
+    // Calculate Total Service Cost
+    function calculateTotal(e) {
+      if(e) e.preventDefault();
+      
+      const prices = calculateBaseCosts();
+      const printQty = parseInt(document.getElementById('printQty').value || 0);
+      const copyQty = parseInt(document.getElementById('copyQty').value || 0);
+      const laminateQty = parseInt(document.getElementById('laminateQty').value || 0);
+      const typeQty = parseInt(document.getElementById('typeQty').value || 0);
+
+      // Calculate subtotals
+      const printTotal = printQty * prices.printing;
+      const copyTotal = copyQty * prices.photocopy;
+      const laminateTotal = laminateQty * prices.laminating;
+      const typeTotal = typeQty * TYPE_SETTING_PRICE;
+      
+      const subtotal = printTotal + copyTotal + laminateTotal + typeTotal;
+      const profit = subtotal * PROFIT_MARGIN;
+      const total = subtotal + profit;
+
+      // Update displays
+      elements.printQtyDisplay.textContent = printQty;
+      elements.copyQtyDisplay.textContent = copyQty;
+      elements.laminateQtyDisplay.textContent = laminateQty;
+      elements.typeQtyDisplay.textContent = typeQty;
+      
+      elements.printPriceBreakdown.textContent = prices.printing.toFixed(2);
+      elements.copyPriceBreakdown.textContent = prices.photocopy.toFixed(2);
+      elements.laminatePriceBreakdown.textContent = prices.laminating.toFixed(2);
+      
+      elements.printTotal.textContent = printTotal.toFixed(2);
+      elements.copyTotal.textContent = copyTotal.toFixed(2);
+      elements.laminateTotal.textContent = laminateTotal.toFixed(2);
+      elements.typeTotal.textContent = typeTotal.toFixed(2);
+      
+      elements.subtotal.textContent = subtotal.toFixed(2);
+      elements.profitAmount.textContent = profit.toFixed(2);
+      elements.serviceTotal.textContent = total.toFixed(2);
+
+      // Update material usage
+      elements.jobSheets.textContent = printQty + copyQty;
+      elements.jobPouches.textContent = laminateQty;
+      elements.jobInk.textContent = (printQty * 0.05).toFixed(2); // 0.05% ink per print
+
+      // Animate total update
+      animateTotal();
+    }
+
+    function animateTotal() {
+      const totalElement = elements.serviceTotal;
+      totalElement.style.transform = "scale(1.1)";
+      setTimeout(() => {
+        totalElement.style.transform = "scale(1)";
+      }, 300);
+    }
+
+    // PDF Quote Generator
+    document.getElementById('generateQuote').addEventListener('click', function() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Add header
+      doc.setFontSize(20);
+      doc.setTextColor(40, 40, 40);
+      doc.text('YOUR BUSINESS NAME', 105, 20, { align: 'center' });
+      doc.setFontSize(12);
+      doc.text('Service Quote - ' + new Date().toLocaleDateString(), 105, 30, { align: 'center' });
+      
+      // Client details section
+      doc.setFontSize(10);
+      doc.text('Client Name: ___________________________________', 15, 45);
+      doc.text('Phone: _______________   Date: ' + new Date().toLocaleDateString(), 15, 55);
+      
+      // Table data
+      const services = [
+        ['Service', 'Qty', 'Unit Price (₦)', 'Total (₦)'],
+        ['Printing', document.getElementById('printQty').value, document.getElementById('printPrice').textContent, document.getElementById('printTotal').textContent],
+        ['Photocopy', document.getElementById('copyQty').value, document.getElementById('copyPrice').textContent, document.getElementById('copyTotal').textContent],
+        ['Laminating', document.getElementById('laminateQty').value, document.getElementById('laminatePrice').textContent, document.getElementById('laminateTotal').textContent],
+        ['Typesetting', document.getElementById('typeQty').value, '150.00', document.getElementById('typeTotal').textContent],
+      ];
+      
+      // Generate table
+      doc.autoTable({
+        startY: 65,
+        head: [services[0]],
+        body: services.slice(1),
+        theme: 'grid',
+        headStyles: { fillColor: [220, 53, 69] }, // Red header
+      });
+      
+      // Total row
+      doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 10,
+        body: [
+          ['Subtotal', '', '', '₦' + document.getElementById('subtotal').textContent],
+          ['Profit Margin (70%)', '', '', '+₦' + document.getElementById('profitAmount').textContent],
+          ['Total', '', '', '₦' + document.getElementById('serviceTotal').textContent],
+        ],
+        styles: { fontStyle: 'bold' },
+      });
+      
+      // Footer note
+      doc.setFontSize(8);
+      doc.setTextColor(100);
+      doc.text('Thank you for your business!', 105, doc.lastAutoTable.finalY + 20, { align: 'center' });
+      
+      // Save PDF
+      doc.save('Service-Quote-' + new Date().toLocaleDateString() + '.pdf');
+    });
+
+    // Invoice Tracker System
+    document.getElementById('saveInvoice').addEventListener('click', function() {
+      const invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+      const services = [
+        `Printing (${document.getElementById('printQty').value} copies)`,
+        `Photocopy (${document.getElementById('copyQty').value} copies)`,
+        `Laminating (${document.getElementById('laminateQty').value} sheets)`,
+        `Typesetting (${document.getElementById('typeQty').value} pages)`,
+      ].filter(s => !s.includes('0')); // Only include non-zero services
+      
+      invoices.push({
+        date: new Date().toLocaleString(),
+        services: services.join(', ') || 'No services',
+        total: document.getElementById('serviceTotal').textContent,
+        status: 'Pending'
+      });
+      
+      localStorage.setItem('invoices', JSON.stringify(invoices));
+      loadInvoices();
+      alert('Job saved to history!');
+    });
+
+    // Load saved invoices
+    function loadInvoices() {
+      const invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+      const table = document.querySelector('#invoiceTable tbody');
+      table.innerHTML = '';
+      
+      invoices.forEach((inv, index) => {
+        const row = `
+          <tr>
+            <td>${inv.date}</td>
+            <td>${inv.services}</td>
+            <td>₦${inv.total}</td>
+            <td>
+              <span class="badge ${inv.status === 'Paid' ? 'bg-success' : 'bg-warning'}">
+                ${inv.status}
+              </span>
+            </td>
+            <td>
+              <button onclick="markPaid(${index})" class="btn btn-sm btn-success">
+                <i class="fas fa-check"></i>
+              </button>
+              <button onclick="deleteInvoice(${index})" class="btn btn-sm btn-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+        table.insertAdjacentHTML('beforeend', row);
+      });
+    }
+
+    // Helper functions for invoices
+    window.markPaid = function(index) {
+      const invoices = JSON.parse(localStorage.getItem('invoices'));
+      invoices[index].status = 'Paid';
+      localStorage.setItem('invoices', JSON.stringify(invoices));
+      loadInvoices();
+    };
+
+    window.deleteInvoice = function(index) {
+      if(confirm('Delete this invoice permanently?')) {
+        const invoices = JSON.parse(localStorage.getItem('invoices'));
+        invoices.splice(index, 1);
+        localStorage.setItem('invoices', JSON.stringify(invoices));
+        loadInvoices();
+      }
+    };
+
+    // Export to CSV
+    document.getElementById('exportCSV').addEventListener('click', function() {
+      const invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+      let csv = 'Date,Services,Total,Status\n';
+      
+      invoices.forEach(inv => {
+        csv += `"${inv.date}","${inv.services}","₦${inv.total}","${inv.status}"\n`;
+      });
+      
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Job-History-${new Date().toLocaleDateString()}.csv`;
+      a.click();
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animate card entrance
+      const card = document.querySelector('#services .card');
+      card.style.opacity = 0;
+      card.style.transform = "translateY(20px)";
+      setTimeout(() => {
+        card.style.transition = "all 0.5s ease";
+        card.style.opacity = 1;
+        card.style.transform = "translateY(0)";
+      }, 100);
+      
+      // Calculate initial prices
+      calculateBaseCosts();
+      loadInvoices();
+    });
+
+    // Event Listeners
+    elements.paperPrice.addEventListener('input', calculateBaseCosts);
+    elements.laminatePackPrice.addEventListener('input', calculateBaseCosts);
+    elements.inkCost.addEventListener('input', calculateBaseCosts);
+    document.getElementById('serviceForm').addEventListener('submit', calculateTotal);
+  </script>
     </div>
 
     <!-- Footer -->
